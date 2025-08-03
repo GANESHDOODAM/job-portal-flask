@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">Apply for {{ job.title }} at {{ job.company_name }}</h2>
+
+<form method="POST" enctype="multipart/form-data">
+  {{ form.hidden_tag() }}
+
+  <!-- Name (read-only) -->
+  <div class="mb-3">
+    <label class="form-label">Name:</label>
+    <input type="text" class="form-control" value="{{ current_user.username }}" readonly>
+  </div>
+
+  <!-- Email (read-only) -->
+  <div class="mb-3">
+    <label class="form-label">Email:</label>
+    <input type="email" class="form-control" value="{{ current_user.email }}" readonly>
+  </div>
+
+  <!-- Phone -->
+  <div class="mb-3">
+    {{ form.phone.label(class="form-label") }}
+    {{ form.phone(class="form-control") }}
+  </div>
+
+  <!-- Cover Letter -->
+  <div class="mb-3">
+    {{ form.cover_letter.label(class="form-label") }}
+    {{ form.cover_letter(class="form-control", rows=4) }}
+  </div>
+
+  <!-- Resume Upload -->
+  <div class="mb-3">
+    {{ form.resume.label(class="form-label") }}
+    {{ form.resume(class="form-control") }}
+  </div>
+
+  <!-- Buttons -->
+  <div class="mb-3">
+    {{ form.submit(class="btn btn-primary") }}
+    <a href="{{ url_for('routes.dashboard') }}" class="btn btn-secondary">Cancel</a>
+  </div>
+</form>
+{% endblock %}

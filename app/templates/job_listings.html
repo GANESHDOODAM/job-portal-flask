@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">All Available Jobs</h2>
+
+<form method="get" class="row mb-4">
+  <div class="col-md-4">
+    <input type="text" name="keyword" class="form-control" placeholder="Search by job title" value="{{ request.args.get('keyword', '') }}">
+  </div>
+  <div class="col-md-4">
+    <input type="text" name="location" class="form-control" placeholder="Search by location" value="{{ request.args.get('location', '') }}">
+  </div>
+  <div class="col-md-4">
+    <button type="submit" class="btn btn-primary w-100">Search</button>
+  </div>
+</form>
+
+{% if jobs %}
+  <div class="row">
+    {% for job in jobs %}
+      <div class="col-md-6">
+        <div class="card shadow-sm mb-4 p-3">
+          <h5>{{ job.title }}</h5>
+          <p class="text-muted">Company: {{ job.company_name }} | Location: {{ job.location }}</p>
+          <p>{{ job.description[:150] }}...</p>
+          <p><strong>Salary:</strong> {{ job.salary or "Not specified" }}</p>
+          <small class="text-muted">Posted on: {{ job.timestamp.strftime('%Y-%m-%d') }}</small><br>
+
+          {% if current_user.is_authenticated and current_user.role == 'seeker' %}
+            <a href="{{ url_for('routes.apply', job_id=job.id) }}" class="btn btn-sm btn-primary mt-2">Apply</a>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>No jobs found at the moment.</p>
+{% endif %}
+{% endblock %}

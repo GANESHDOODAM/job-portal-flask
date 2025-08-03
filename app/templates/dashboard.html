@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">Dashboard</h2>
+
+{% if current_user.role == 'employer' %}
+  <a href="{{ url_for('routes.post_job') }}" class="btn btn-primary mb-3">+ Post New Job</a>
+  <h4>Your Posted Jobs:</h4>
+  {% if jobs %}
+    <ul class="list-group">
+      {% for job in jobs %}
+        <li class="list-group-item">
+          <strong>{{ job.title }}</strong> at <span class="text-muted">{{ job.company_name }}</span> — {{ job.location }}
+          <p class="mb-1 text-muted">{{ job.description[:100] }}...</p>
+          <span class="badge bg-secondary">Salary: {{ job.salary or 'N/A' }}</span><br>
+          <small class="text-muted">Posted on: {{ job.timestamp.strftime('%Y-%m-%d') }}</small>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You haven't posted any jobs yet.</p>
+  {% endif %}
+
+{% elif current_user.role == 'seeker' %}
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-3" id="dashboardTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="jobs-tab" data-bs-toggle="tab" data-bs-target="#jobs" type="button" role="tab">All Jobs</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="applications-tab" data-bs-toggle="tab" data-bs-target="#applications" type="button" role="tab">My Applications</button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="dashboardTabsContent">
+    <!-- All Jobs Tab -->
+    <div class="tab-pane fade show active" id="jobs" role="tabpanel">
+      {% if jobs %}
+        <div class="row">
+          {% for job in jobs %}
+            <div class="col-md-6">
+              <div class="card mb-3 p-3 shadow-sm">
+                <h5>{{ job.title }}</h5>
+                <p class="text-muted">Company: {{ job.company_name }} | Location: {{ job.location }}</p>
+                <p>{{ job.description[:120] }}...</p>
+                <p><strong>Salary:</strong> {{ job.salary or "Not specified" }}</p>
+                <small class="text-muted">Posted on: {{ job.timestamp.strftime('%Y-%m-%d') }}</small><br>
+
+                {% if job.id in applied_job_ids %}
+                  <button class="btn btn-secondary btn-sm mt-2" disabled>Already Applied</button>
+                {% else %}
+                  <a href="{{ url_for('routes.apply', job_id=job.id) }}" class="btn btn-sm btn-primary mt-2">Apply</a>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>No jobs available at the moment.</p>
+      {% endif %}
+    </div>
+
+    <!-- My Applications Tab -->
+    <div class="tab-pane fade" id="applications" role="tabpanel">
+      {% if applications %}
+        <ul class="list-group">
+          {% for app in applications %}
+            {% set job = app.job %}
+            <li class="list-group-item">
+              <strong>{{ job.title }}</strong> at <span class="text-muted">{{ job.company_name }}</span> — {{ job.location }}
+              <p class="mb-1 text-muted">{{ job.description[:100] }}...</p>
+              <small class="text-muted">Applied on: {{ app.timestamp.strftime('%Y-%m-%d') }}</small>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>You haven't applied for any jobs yet.</p>
+      {% endif %}
+    </div>
+  </div>
+{% endif %}
+{% endblock %}
+
