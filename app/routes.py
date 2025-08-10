@@ -224,7 +224,7 @@ def logout():
     logout_user()
     flash("You have been logged out.")
     return redirect(url_for('routes.index'))
-
+'''
 # ✅ Temporary route to create admin on deployed DB (e.g., Render)
 @bp.route('/create-admin')
 def create_admin():
@@ -240,3 +240,4 @@ def create_admin():
     db.session.add(admin)
     db.session.commit()
     return "Admin user created!"
+'''
